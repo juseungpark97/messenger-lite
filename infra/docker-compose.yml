@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: messenger_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: messenger
+      POSTGRES_PASSWORD: messenger123
+      POSTGRES_DB: messenger_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - messenger-net
+
+  mongodb:
+    image: mongo:8.0.5
+    container_name: messenger_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+    networks:
+      - messenger-net
+
+volumes:
+  pgdata:
+  mongodata:
+
+networks:
+  messenger-net:
+    driver: bridge
+
