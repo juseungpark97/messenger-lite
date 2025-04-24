@@ -1,8 +1,21 @@
+@file:Suppress("DSL_SCOPE_VIOLATION")
+
 plugins {
     id("org.springframework.boot") version "3.2.5"
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.spring") version "1.9.22"
+    kotlin("plugin.noarg") version "1.9.22"
+}
+
+kotlin {
+    sourceSets.all {
+        languageSettings.optIn("kotlin.RequiresOptIn")
+    }
+}
+
+noArg {
+    annotation("jakarta.persistence.Entity")
 }
 
 group = "dev.juseung"
@@ -24,4 +37,3 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
-
