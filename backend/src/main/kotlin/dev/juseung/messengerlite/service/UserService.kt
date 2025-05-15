@@ -20,4 +20,15 @@ class UserService(
         val user = User(email = email, password = encodedPassword, name = name)
         return userRepository.save(user)
     }
+
+    fun authenticate(email: String, password: String): User {
+        val user = userRepository.findByEmail(email)
+            ?: throw IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.")
+
+        if (!passwordEncoder.matches(password, user.password)) {
+            throw IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.")
+        }
+
+        return user
+    }
 }

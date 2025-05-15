@@ -1,15 +1,19 @@
 package dev.juseung.messengerlite.controller
 
+import dev.juseung.messengerlite.config.jwt.JwtTokenProvider
 import dev.juseung.messengerlite.domain.dto.SignupRequest
 import dev.juseung.messengerlite.domain.service.UserService
 import dev.juseung.messengerlite.domain.User
+import dev.juseung.messengerlite.dto.LoginRequest
+import dev.juseung.messengerlite.dto.LoginResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/auth")
 class UserController(
-    private val userService: UserService
+    private val userService: UserService,
+    private val jwtTokenProvider: JwtTokenProvider
 ) {
 
     @PostMapping("/signup")
@@ -20,5 +24,18 @@ class UserController(
             name = request.name
         )
         return ResponseEntity.ok(user)
+    }
+
+
+    @PostMapping("/login")
+    fun login(@RequestBody request: LoginRequest): ResponseEntity<LoginResponse> {
+        val user = userService.authenticate(request.email, request.password)
+
+        user.id?.let{
+            val accessToken = jwtTokenProvider.createAccessToken(it)
+            val refreshToken = jwtTokenProvider.createRefreshToken()
+            return ResponseEntity.ok(LoginResponse(accessToken, refreshToken))
+        } ?: throw IllegalStateException("회원 ID가 존재하지 않습니다.")
+
     }
 }
