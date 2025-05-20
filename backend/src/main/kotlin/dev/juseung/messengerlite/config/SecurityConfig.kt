@@ -23,6 +23,7 @@ class SecurityConfig {
             .cors { }
             .authorizeHttpRequests {
                 it.requestMatchers("/api/v1/auth/**").permitAll()
+                it.requestMatchers("/ws/**").permitAll()
                 it.anyRequest().authenticated()
             }
             .formLogin { it.disable() }
@@ -36,6 +37,7 @@ class SecurityConfig {
         val config = CorsConfiguration()
         config.allowCredentials = true
         config.addAllowedOrigin("http://localhost:5174")
+        config.addAllowedOrigin("http://localhost:5173")
         config.addAllowedHeader("*")
         config.addAllowedMethod("*")
 

@@ -18,6 +18,16 @@ function Login() {
       const { accessToken, refreshToken } = res.data
       localStorage.setItem('accessToken', accessToken)
       localStorage.setItem('refreshToken', refreshToken)
+    // WebSocket 연결
+      const socket = new WebSocket(`ws://localhost:8080/ws/chat?token=${accessToken}`)
+      socket.onopen = () => {
+        console.log("WebSocket 연결 성공")
+      }
+      socket.onmessage = (event) => {
+        console.log("수신된 메시지:", event.data)
+      }
+
+
 
       alert('로그인 성공!')
       navigate('/chat')
