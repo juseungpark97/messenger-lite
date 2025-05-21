@@ -1,18 +1,26 @@
 package dev.juseung.messengerlite.socket
 
+import dev.juseung.messengerlite.config.jwt.JwtTokenProvider
+import dev.juseung.messengerlite.domain.repository.ChannelUserRepository
 import org.springframework.web.socket.*
 import org.springframework.web.socket.handler.TextWebSocketHandler
 import java.util.concurrent.ConcurrentHashMap
 
-class ChatSocketHandler : TextWebSocketHandler() {
+class ChatSocketHandler(
+    private val jwtTokenProvider: JwtTokenProvider,
+    private val channelUserRepository: ChannelUserRepository
+) : TextWebSocketHandler() {
 
     private val roomMap = ConcurrentHashMap<String, MutableSet<WebSocketSession>>()
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
-        val userId = extractUserIdFromQuery(session)
-        val dummyChannels = listOf("channel-1", "channel-2")
+        val token = session.uri?.query?.substringAfter("token=") ?: return
+        val userId = jwtTokenProvider.getUserIdFromToken(token)  // userId: Long
 
-        dummyChannels.forEach { channelId ->
+        val channelUsers = channelUserRepository.findAllByUserId(userId)
+
+        channelUsers.forEach { cu ->
+            val channelId = cu.channel.id!!.toString()
             roomMap.computeIfAbsent(channelId) { mutableSetOf() }.add(session)
             println("[$userId] joined $channelId")
         }
@@ -20,7 +28,7 @@ class ChatSocketHandler : TextWebSocketHandler() {
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         val payload = message.payload
-        val channelId = extractChannelIdFromPayload(payload)  // 예시: JSON 파싱해서 추출
+        val channelId = extractChannelIdFromPayload(payload)
 
         roomMap[channelId]?.forEach {
             if (it.isOpen) it.sendMessage(TextMessage(payload))
@@ -31,13 +39,8 @@ class ChatSocketHandler : TextWebSocketHandler() {
         roomMap.values.forEach { it.remove(session) }
     }
 
-    private fun extractUserIdFromQuery(session: WebSocketSession): String {
-        return session.uri?.query?.substringAfter("token=")?.takeIf { it.isNotBlank() } ?: "anonymous"
-    }
-
     private fun extractChannelIdFromPayload(payload: String): String {
-        // 간단한 문자열 파싱 or JSON 파싱 예시
         return Regex("\"channelId\"\\s*:\\s*\"([^\"]+)\"")
-            .find(payload)?.groups?.get(1)?.value ?: "channel-1"
+            .find(payload)?.groups?.get(1)?.value ?: "unknown"
     }
 }
