@@ -24,6 +24,7 @@ class SecurityConfig {
             .authorizeHttpRequests {
                 it.requestMatchers("/api/v1/auth/**").permitAll()
                 it.requestMatchers("/ws/**").permitAll()
+                it.requestMatchers("/test/kafka/**").permitAll()
                 it.anyRequest().authenticated()
             }
             .formLogin { it.disable() }
