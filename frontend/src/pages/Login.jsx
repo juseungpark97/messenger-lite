@@ -22,7 +22,7 @@ function Login() {
         console.log("수신된 메시지:", event.data);
       };
       alert('로그인 성공!');
-      navigate('/chat');
+      navigate('/main');
     } catch (err) {
       alert('로그인 실패: ' + (err.response?.data?.message || err.message));
     }
