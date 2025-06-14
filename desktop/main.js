@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 
 function createWindow() {
@@ -22,3 +22,16 @@ app.whenReady().then(createWindow)
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
+
+ipcMain.on('open-user-profile', (event, user) => {
+  const profileWindow = new BrowserWindow({
+    width: 400,
+    height: 500,
+    title: `${user.name}의 프로필`,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+    },
+  });
+
+  profileWindow.loadURL(`file://${__dirname}/profile.html?userId=${user.id}`);
+});

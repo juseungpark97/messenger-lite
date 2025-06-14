@@ -7,7 +7,11 @@ export default function ChatItem({ chat }) {
       onDoubleClick={() => openChatWindow(chat.id)}
       className="flex items-center px-4 py-3 hover:bg-gray-100 cursor-pointer select-none"
     >
-      <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-xl mr-3">🧑</div>
+      <img
+        src={`https://i.pravatar.cc/150?img=${chat.id}`} // 또는 DiceBear 아바타 API
+        alt="랜덤 프로필"
+        className="w-12 h-12 rounded-full mr-3 object-cover"
+      />
       <div className="flex-1">
         <div className="flex justify-between items-center">
           <span className="font-semibold">{chat.name} {chat.pinned && '📌'}</span>

@@ -42,5 +42,11 @@ data class Channel(
      * 생성 시각
      */
     @Column(name = "created_at", nullable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now()
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+
+    /**
+     * 채널 식별자
+     */
+    @Column(name = "channel_key", unique = true)
+    val channelKey: String? = null
 )

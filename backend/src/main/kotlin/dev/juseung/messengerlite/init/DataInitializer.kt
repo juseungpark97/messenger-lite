@@ -25,27 +25,22 @@ class DataInitializer(
                 User(
                     email = "test@local.com",
                     password = passwordEncoder.encode("1234"),
-                    name = "테스트 유저"
+                    name = "김민수",
+                    profileImageUrl = "https://i.pravatar.cc/150?img=3",
+                    statusMessage = "대기업 준비중"
                 )
             )
 
-            val channel = channelRepository.save(
-                Channel(
-                    name = "테스트 채널",
-                    isGroup = false,
-                    createdBy = user
+            val user2 = userRepository.save(
+                User(
+                    email = "user2@local.com",
+                    password = passwordEncoder.encode("1234"),
+                    name = "김민지",
+                    profileImageUrl = "https://i.pravatar.cc/150?img=12",
+                    statusMessage = "지금은 좀 바빠요"
                 )
             )
 
-            channelUserRepository.save(
-                ChannelUser(
-                    channel = channel,
-                    user = user,
-                    role = "MEMBER"
-                )
-            )
-
-            println("개발용 더미 유저/채널/참여자 생성 완료")
         }
     }
 }
